@@ -4,17 +4,25 @@ import Topbar from './components/Topbar'
 import Dashboard from './components/Dashboard'
 import Formulario from './components/Formulario'
 import Historial from './components/Historial'
+import DetallePaciente from './components/DetallePaciente'
 
-type Pantalla = 'dashboard' | 'formulario' | 'pacientes' | 'analisis'
+type Pantalla = 'dashboard' | 'formulario' | 'pacientes' | 'detalle' | 'analisis'
 
 function App() {
   const [pantalla, setPantalla] = useState<Pantalla>('dashboard')
+  const [pacienteSeleccionado, setPacienteSeleccionado] = useState<any>(null)
 
   const titulos: Record<Pantalla, { titulo: string, subtitulo: string }> = {
     dashboard: { titulo: 'Dashboard', subtitulo: 'Resumen de actividad quirúrgica' },
     formulario: { titulo: 'Nueva cirugía', subtitulo: 'Completá todos los campos del registro' },
     pacientes: { titulo: 'Historial de pacientes', subtitulo: 'Todos los registros quirúrgicos' },
+    detalle: { titulo: pacienteSeleccionado?.nombre || 'Detalle', subtitulo: 'Ficha completa del paciente' },
     analisis: { titulo: 'Análisis', subtitulo: 'Análisis detallado de tu práctica' },
+  }
+
+  const handleVerPaciente = (cirugia: any) => {
+    setPacienteSeleccionado(cirugia)
+    setPantalla('detalle')
   }
 
   return (
@@ -39,7 +47,14 @@ function App() {
         {pantalla === 'pacientes' && (
           <Historial
             onNuevaCirugia={() => setPantalla('formulario')}
-            onVerPaciente={(c) => console.log(c)}
+            onVerPaciente={handleVerPaciente}
+          />
+        )}
+        {pantalla === 'detalle' && pacienteSeleccionado && (
+          <DetallePaciente
+            cirugia={pacienteSeleccionado}
+            onVolver={() => setPantalla('pacientes')}
+            onEditar={() => setPantalla('formulario')}
           />
         )}
         {pantalla === 'analisis' && (
