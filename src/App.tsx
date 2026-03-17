@@ -3,24 +3,29 @@ import Sidebar from './components/Sidebar'
 import Topbar from './components/Topbar'
 import Dashboard from './components/Dashboard'
 import Formulario from './components/Formulario'
+import Historial from './components/Historial'
 
-type Pantalla = 'dashboard' | 'formulario'
+type Pantalla = 'dashboard' | 'formulario' | 'pacientes' | 'analisis'
 
 function App() {
   const [pantalla, setPantalla] = useState<Pantalla>('dashboard')
 
+  const titulos: Record<Pantalla, { titulo: string, subtitulo: string }> = {
+    dashboard: { titulo: 'Dashboard', subtitulo: 'Resumen de actividad quirúrgica' },
+    formulario: { titulo: 'Nueva cirugía', subtitulo: 'Completá todos los campos del registro' },
+    pacientes: { titulo: 'Historial de pacientes', subtitulo: 'Todos los registros quirúrgicos' },
+    analisis: { titulo: 'Análisis', subtitulo: 'Análisis detallado de tu práctica' },
+  }
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f5f5f5' }}>
-      <Sidebar
-        pantallaActiva={pantalla}
-        onNavegar={setPantalla}
-      />
+      <Sidebar pantallaActiva={pantalla} onNavegar={setPantalla} />
       <div style={{ marginLeft: '180px', flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         <Topbar
-          titulo={pantalla === 'dashboard' ? 'Dashboard' : 'Nueva cirugía'}
-          subtitulo={pantalla === 'dashboard' ? 'Resumen de actividad quirúrgica' : 'Completá todos los campos del registro'}
+          titulo={titulos[pantalla].titulo}
+          subtitulo={titulos[pantalla].subtitulo}
           onNuevaCirugia={() => setPantalla('formulario')}
-          mostrarBotonNueva={pantalla === 'dashboard'}
+          mostrarBotonNueva={pantalla !== 'formulario'}
         />
         {pantalla === 'dashboard' && (
           <Dashboard onNuevaCirugia={() => setPantalla('formulario')} />
@@ -28,8 +33,19 @@ function App() {
         {pantalla === 'formulario' && (
           <Formulario
             onVolver={() => setPantalla('dashboard')}
-            onGuardado={() => setPantalla('dashboard')}
+            onGuardado={() => setPantalla('pacientes')}
           />
+        )}
+        {pantalla === 'pacientes' && (
+          <Historial
+            onNuevaCirugia={() => setPantalla('formulario')}
+            onVerPaciente={(c) => console.log(c)}
+          />
+        )}
+        {pantalla === 'analisis' && (
+          <div style={{ padding: '40px', textAlign: 'center', color: '#888', fontSize: '14px' }}>
+            Próximamente — Análisis detallado
+          </div>
         )}
       </div>
     </div>
