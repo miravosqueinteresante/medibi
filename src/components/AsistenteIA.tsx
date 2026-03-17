@@ -55,9 +55,10 @@ Si te preguntan algo que no está en los datos, decilo claramente.
         .join('\n')
 
       const prompt = `${contexto}\n\nConversación:\n${historialTexto}\n\nAsistente:`
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyBiziVYaNLaxQbs-YBGqCGbZjbluHMlFkE`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -69,7 +70,6 @@ Si te preguntan algo que no está en los datos, decilo claramente.
       )
 
       const data = await response.json()
-      console.log('Respuesta Gemini:', data)
       const respuesta = data.candidates?.[0]?.content?.parts?.[0]?.text ||
         data.error?.message ||
         'No pude obtener una respuesta.'
