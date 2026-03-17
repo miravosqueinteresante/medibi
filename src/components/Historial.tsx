@@ -35,7 +35,7 @@ function getBadgeColor(dx: string) {
   return key ? { bg: BADGES[key], text: BADGE_TEXT[key] } : { bg: '#f0f0f0', text: '#666' }
 }
 
-export default function Historial({ onNuevaCirugia, onVerPaciente }: Props) {
+export default function Historial({ onVerPaciente }: Props) {
   const [cirugias, setCirugias] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [busqueda, setBusqueda] = useState('')
@@ -47,12 +47,12 @@ export default function Historial({ onNuevaCirugia, onVerPaciente }: Props) {
   const POR_PAGINA = 8
 
   useEffect(() => {
-    async function fetch() {
+    async function fetchData() {
       const { data } = await supabase.from('cirugias').select('*').order('fecha_cirugia', { ascending: false })
       if (data) setCirugias(data)
       setLoading(false)
     }
-    fetch()
+    fetchData()
   }, [])
 
   const filtrados = cirugias.filter(c => {
@@ -79,7 +79,7 @@ export default function Historial({ onNuevaCirugia, onVerPaciente }: Props) {
     setPagina(1)
   }
 
-  const select = (value: string, onChange: (v: string) => void, options: string[], placeholder: string) => (
+  const selectFiltro = (value: string, onChange: (v: string) => void, options: string[], placeholder: string) => (
     <select value={value} onChange={e => { onChange(e.target.value); setPagina(1) }} style={{
       fontSize: '11px', padding: '5px 8px', border: `0.5px solid ${value ? '#185FA5' : '#ddd'}`,
       borderRadius: '6px', background: value ? '#E6F1FB' : '#fff',
@@ -95,7 +95,6 @@ export default function Historial({ onNuevaCirugia, onVerPaciente }: Props) {
   return (
     <div style={{ padding: '16px 20px 30px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
-      {/* Buscador y filtros */}
       <div style={{ background: '#fff', border: '0.5px solid #e0e0e0', borderRadius: '10px', padding: '12px 14px' }}>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '10px' }}>
           <div style={{ flex: 1, position: 'relative' }}>
@@ -118,7 +117,7 @@ export default function Historial({ onNuevaCirugia, onVerPaciente }: Props) {
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
           <span style={{ fontSize: '11px', color: '#888' }}>Filtrar por:</span>
-          {select(filtroMes, setFiltroMes, ['01','02','03','04','05','06','07','08','09','10','11','12'].map(m => m), 'Mes')}
+          {selectFiltro(filtroMes, setFiltroMes, ['01','02','03','04','05','06','07','08','09','10','11','12'], 'Mes')}
           <input
             type="text"
             placeholder="Diagnóstico..."
@@ -130,8 +129,8 @@ export default function Historial({ onNuevaCirugia, onVerPaciente }: Props) {
               color: filtroDx ? '#185FA5' : '#666', outline: 'none', width: '120px'
             }}
           />
-          {select(filtroSeguro, setFiltroSeguro, seguros, 'Seguro')}
-          {select(filtroLugar, setFiltroLugar, lugares, 'Lugar')}
+          {selectFiltro(filtroSeguro, setFiltroSeguro, seguros, 'Seguro')}
+          {selectFiltro(filtroLugar, setFiltroLugar, lugares, 'Lugar')}
           {(busqueda || filtroDx || filtroSeguro || filtroLugar || filtroMes) && (
             <button onClick={limpiarFiltros} style={{
               fontSize: '11px', padding: '5px 8px', border: '0.5px solid #ddd',
@@ -141,9 +140,7 @@ export default function Historial({ onNuevaCirugia, onVerPaciente }: Props) {
         </div>
       </div>
 
-      {/* Lista */}
       <div style={{ background: '#fff', border: '0.5px solid #e0e0e0', borderRadius: '10px', overflow: 'hidden' }}>
-        {/* Header */}
         <div style={{
           display: 'grid', gridTemplateColumns: '2fr 1.5fr 1fr 1fr 1fr 70px',
           gap: '8px', padding: '9px 16px',
@@ -154,7 +151,6 @@ export default function Historial({ onNuevaCirugia, onVerPaciente }: Props) {
           ))}
         </div>
 
-        {/* Filas */}
         {paginados.length === 0 ? (
           <div style={{ padding: '30px', textAlign: 'center', color: '#888', fontSize: '12px' }}>
             No se encontraron registros
@@ -207,7 +203,6 @@ export default function Historial({ onNuevaCirugia, onVerPaciente }: Props) {
           )
         })}
 
-        {/* Paginación */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', borderTop: '0.5px solid #f0f0f0' }}>
           <span style={{ fontSize: '11px', color: '#888' }}>
             Mostrando {Math.min((pagina - 1) * POR_PAGINA + 1, filtrados.length)}–{Math.min(pagina * POR_PAGINA, filtrados.length)} de {filtrados.length} registros

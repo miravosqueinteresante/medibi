@@ -1,5 +1,3 @@
-type Pantalla = 'dashboard' | 'formulario' | 'pacientes' | 'analisis'
-
 interface Props {
   pantallaActiva: string
   onNavegar: (pantalla: any) => void

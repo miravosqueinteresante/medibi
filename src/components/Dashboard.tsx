@@ -10,14 +10,15 @@ const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov'
 export default function Dashboard({ onNuevaCirugia }: { onNuevaCirugia: () => void }) {
   const [cirugias, setCirugias] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  void onNuevaCirugia
 
   useEffect(() => {
-    async function fetch() {
+    async function fetchData() {
       const { data } = await supabase.from('cirugias').select('*')
       if (data) setCirugias(data)
       setLoading(false)
     }
-    fetch()
+    fetchData()
   }, [])
 
   if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>Cargando datos...</div>
